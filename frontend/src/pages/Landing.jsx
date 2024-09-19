@@ -60,7 +60,6 @@ const HomePage = () => {
       {/* Main Content Area */}
       <main className="main-content">
         <div className="main-overlay">
-            { <div className=""> this is some really messed up thing</div> }
           {selectedMenuItem === "Dashboard" && <Dashboard />}
           {/* {selectedMenuItem === "Users" && <Users />}
           {selectedMenuItem === "Books" && <BookList />}

@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+import uuid
 
 
 # Create your models here.
@@ -14,6 +15,7 @@ class Note(models.Model):
         return self.title
     
 class Book(models.Model):
+    id = models.UUIDField(unique=True, primary_key=True, default=uuid.uuid4, editable=False)
     code = models.CharField(max_length=50, unique=True)
     title = models.CharField(max_length=225)
     author = models.CharField(max_length=225)

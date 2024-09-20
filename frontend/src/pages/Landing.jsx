@@ -1,7 +1,10 @@
-import {useState} from "react";
-import { Link, Outlet } from "react-router-dom";
+import { useState } from "react";
+import { Outlet } from "react-router-dom";
 import "./Landing.css"; // Import the regular CSS
 import Dashboard from "./Dashboard";
+import Users from "./Users";
+import BookList from "./BookList";
+import IssueReturn from "./IssueReturn";
 
 const HomePage = () => {
   const [selectedMenuItem, setSelectedMenuItem] = useState("Dashboard");
@@ -32,21 +35,23 @@ const HomePage = () => {
             >
               Dashboard
             </li>
-
-            <li>
-              <Link to="/about" className="menu-link">
-                About
-              </Link>
+            <li
+              className="menu-link"
+              onClick={() => handleMenuItemClick("Users")}
+            >
+              Users
             </li>
-            <li>
-              <Link to="/services" className="menu-link">
-                Services
-              </Link>
+            <li
+              className="menu-link"
+              onClick={() => handleMenuItemClick("Books")}
+            >
+              Books
             </li>
-            <li>
-              <Link to="/contact" className="menu-link">
-                Contact
-              </Link>
+            <li
+              className="menu-link"
+              onClick={() => handleMenuItemClick("Issue/Return")}
+            >
+              Issue/Return
             </li>
           </ul>
         </nav>
@@ -61,9 +66,9 @@ const HomePage = () => {
       <main className="main-content">
         <div className="main-overlay">
           {selectedMenuItem === "Dashboard" && <Dashboard />}
-          {/* {selectedMenuItem === "Users" && <Users />}
+          {selectedMenuItem === "Users" && <Users />}
           {selectedMenuItem === "Books" && <BookList />}
-          {selectedMenuItem === "Issue/Return" && <IssueReturn />} */}
+          {selectedMenuItem === "Issue/Return" && <IssueReturn />}
           <Outlet />
         </div>
       </main>

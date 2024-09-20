@@ -20,8 +20,12 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-      <Route path="/" element={<Landing />} />
-
+     
+      <Route path="/" element={
+        <ProtectedRoute>
+          <Landing />
+        </ProtectedRoute>
+        } />
 
         <Route
           path="/home"
@@ -35,6 +39,7 @@ function App() {
         <Route path="/logout" element={<Logout />} />
         <Route path="/register/admin" element={<RegisterAndLogout />} />
         <Route path="/register/examiner" element={<RegisterExaminer />} />
+        
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>

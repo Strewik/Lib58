@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
-import "../css/Users.css";
+import "./Users.css";
 
 function Users() {
   const [users, setUsers] = useState([]);
@@ -16,7 +16,7 @@ function Users() {
   const fetchUsers = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:4000/users"
+        "http://localhost:8000/api/users"
       );
       setUsers(response.data);
     } catch (error) {

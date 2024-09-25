@@ -1,0 +1,6 @@
+[
+  {
+    "type": "sqlite",
+    "path": "./backend/db.sqlite"
+  }
+]

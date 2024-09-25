@@ -1,8 +1,8 @@
-import { useState } from 'react';
-import axios from 'axios';
-import '../css/AddBookForm.css';
+import { useState, useEffect } from 'react';
+import './AddBookForm.css';
+import api from "../api";
 
-function AddBookForm() {
+function AddBookForm({ book, onClose, onSave }) {
   const [formData, setFormData] = useState({
     code: '',
     title: '',
@@ -10,8 +10,23 @@ function AddBookForm() {
     genre: '',
     language: '',
     quantity: 0,
-    yearOfPublication: ''
+    published: ''
   });
+
+  // Effect to preload form data if we're editing a book
+  useEffect(() => {
+    if (book) {
+      setFormData({
+        code: book.code || '',
+        title: book.title || '',
+        author: book.author || '',
+        genre: book.genre || '',
+        language: book.language || '',
+        quantity: book.quantity || 0,
+        published: book.published || ''
+      });
+    }
+  }, [book]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -24,26 +39,35 @@ function AddBookForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:4000/book', formData);
-      // Clear form fields after successful submission
+      if (book) {
+        await api.put(`/api/book/${book.id}/`, formData);
+        alert('Book updated successfully!');
+      } else {
+        await api.post("/api/books/", formData);
+        alert('Book added successfully!');
+      }
+
+      onSave();
+      onClose();
+
       setFormData({
         code: '',
         title: '',
         author: '',
         genre: '',
+        language: '',
         quantity: 0,
-        yearOfPublication: ''
+        published: ''
       });
-      alert('Book added successfully!');
     } catch (error) {
-      console.error('Error adding book:', error);
-      alert('Failed to add book. Please try again.');
+      console.error('Error adding or updating book:', error);
+      alert('Failed to submit the form. Please try again.');
     }
   };
 
   return (
     <div className="add-book-form">
-      <h2>Add New Book</h2>
+      <h2>{book ? 'Edit Book' : 'Add New Book'}</h2>
       <form onSubmit={handleSubmit}>
         <div>
           <label htmlFor="code">Code</label>
@@ -112,20 +136,24 @@ function AddBookForm() {
           />
         </div>
         <div>
-          <label htmlFor="yearOfPublication">Year of Publication</label>
+          <label htmlFor="published">Year of Publication</label>
           <input
             type="text"
-            id="yearOfPublication"
-            name="yearOfPublication"
-            value={formData.yearOfPublication}
+            id="published"
+            name="published"
+            value={formData.published}
             onChange={handleChange}
             required
           />
         </div>
-        <button type="submit">Add Book</button>
+        <button type="submit">{book ? 'Update Book' : 'Add Book'}</button>
       </form>
+      <button onClick={onClose}>Cancel</button> {/* Close button to close modal */}
     </div>
   );
 }
 
 export default AddBookForm;
+
+
+

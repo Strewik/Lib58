@@ -17,6 +17,8 @@
   table {
     width: 100%;
     border-collapse: collapse;
+    background-color:aliceblue;
+    margin-top: 20px;
   }
   
   table th,
@@ -67,7 +69,6 @@
     border-radius: 5px;
     cursor: pointer;
     margin-top: 20px;
-    margin-bottom: 50px;
   }
   
   .add-book-button:hover {

@@ -8,7 +8,7 @@ urlpatterns = [
 
     # path("books/", views.books, name="books"),
     path("books/", BookListCreate.as_view(), name="book-list"),
-    path("book/<int:pk>/", BookDetail.as_view(), name="book-detail"), 
+    path("book/<str:pk>/", BookDetail.as_view(), name="book-detail"), 
     
 ]
 

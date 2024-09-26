@@ -89,6 +89,22 @@ function BookList() {
     setSelectedBook(null);
   };
 
+  // DELETE Function
+  const deleteBook = (bookId) => {
+    if (window.confirm("Are you sure you want to delete this book?")) {
+      api
+        .delete(`/api/book/${bookId}/`)
+        .then((res) => {
+          // Remove the deleted book from the state
+          setBooks(books.filter((book) => book.id !== bookId));
+          console.log(`Book with ID: ${bookId} deleted successfully`);
+        })
+        .catch((err) => {
+          console.error(`Error deleting book with ID: ${bookId}`, err);
+        });
+    }
+  };
+
   return (
     <div className="book-list">
       <div className="search-bar">
@@ -134,7 +150,7 @@ function BookList() {
                 <button onClick={() => openModal(book)}>Edit</button>
               </td>
               <td>
-                <button>Delete</button>
+                <button onClick={() => deleteBook(book.id)}>Delete</button>
               </td>
               <td>
                 <Link

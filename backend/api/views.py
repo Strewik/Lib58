@@ -10,9 +10,16 @@ from rest_framework import status
 
 from .models import Note
 from .models import Book
-from .serializers import BookSerializer, NoteSerializer
+from .serializers import BookSerializer, NoteSerializer, UserSerializer
+from .models import IssueReturn
+from .serializers import IssueReturnSerializer
 
 # Create your views here.
+
+class UserListView(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
 
 class BookListCreate(generics.ListCreateAPIView):
     queryset = Book.objects.all()
@@ -22,6 +29,38 @@ class BookDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
 
+class IssueBookView(generics.CreateAPIView):
+    queryset = IssueReturn.objects.all()
+    serializer_class = IssueReturnSerializer
+
+    def create(self, request, *args, **kwargs):
+        data = request.data
+        data['status'] = 'issued'
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+# class ReturnBookView(generics.UpdateAPIView):
+#     queryset = IssueReturn.objects.all()
+#     serializer_class = IssueReturnSerializer
+#     lookup_field = 'pk'  # pk will be the issue ID
+
+#     def update(self, request, *args, **kwargs):
+#         instance = self.get_object()
+#         instance.status = 'returned'
+#         instance.return_date = request.data.get('return_date')
+#         instance.save()
+#         serializer = self.get_serializer(instance)
+#         return Response(serializer.data)
+
+
+
+
+class IssueBookView(generics.CreateAPIView):
+    queryset = IssueReturn.objects.all()
+    serializer_class = IssueReturnSerializer
 
 
 

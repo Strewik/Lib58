@@ -3,7 +3,7 @@ import api from "../api";
 import { Link, useLocation } from "react-router-dom";
 import AddBookForm from "./AddBookForm";
 import "./BookList.css";
-import "./CustomModal.css"; // Custom CSS for modal
+import IssueBookForm from "./IssueBookForm";
 
 function CustomModal({ show, onClose, children }) {
   if (!show) return null;
@@ -31,6 +31,7 @@ function BookList() {
   const [sortOrder, setSortOrder] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedBook, setSelectedBook] = useState(null); // To hold book data when editing
+  const [isIssueModalOpen, setIsIssueModalOpen] = useState(false);
 
   const location = useLocation();
 
@@ -86,6 +87,16 @@ function BookList() {
 
   const closeModal = () => {
     setIsModalOpen(false);
+    setSelectedBook(null);
+  };
+
+  const openIssueModal = (book) => {
+    setSelectedBook(book);
+    setIsIssueModalOpen(true);
+  };
+
+  const closeIssueModal = () => {
+    setIsIssueModalOpen(false);
     setSelectedBook(null);
   };
 
@@ -153,14 +164,9 @@ function BookList() {
                 <button onClick={() => deleteBook(book.id)}>Delete</button>
               </td>
               <td>
-                <Link
-                  to={{
-                    pathname: `/issuereturn/${book._id}`,
-                    state: { bookData: book, location: location },
-                  }}
-                >
-                  <button>Issue</button>
-                </Link>
+                
+                  <button onClick={() => openIssueModal(book)}>Issue</button>
+                
               </td>
             </tr>
           ))}
@@ -171,9 +177,23 @@ function BookList() {
       <CustomModal show={isModalOpen} onClose={closeModal}>
         <AddBookForm book={selectedBook} onClose={closeModal} onSave={fetchBooks} />
       </CustomModal>
+
+      <CustomModal show={isIssueModalOpen} onClose={closeIssueModal}>
+   {selectedBook && (
+    <IssueBookForm
+      book={selectedBook}
+      onClose={closeIssueModal}
+      onSave={fetchBooks}
+    />
+  )}
+</CustomModal>
+
     </div>
   );
 }
 
 export default BookList;
+
+
+
 

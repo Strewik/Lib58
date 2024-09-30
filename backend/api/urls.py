@@ -1,7 +1,8 @@
 from django.urls import path
 from . import views
 from .views import BookListCreate, BookDetail
-from .views import IssueBookView
+from .views import IssueReturnListView
+from .views import ReturnBookView
 from .views import UserListView
 
 
@@ -16,10 +17,10 @@ urlpatterns = [
     path("book/<str:pk>/", BookDetail.as_view(), name="book-detail"), 
     
  # Issue a book
-    path('issue/', IssueBookView.as_view(), name='issue-book'), 
+    path('issue/', IssueReturnListView.as_view(), name='issue-book'), 
 
     # Return a book
-    path('issues/<uuid:pk>/return/', IssueBookView.as_view(), name='return-book')
+    path('issues/<uuid:pk>/return/', ReturnBookView.as_view(), name='return-book')
     ]
 
  

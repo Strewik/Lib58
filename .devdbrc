@@ -2,5 +2,9 @@
   {
     "type": "sqlite",
     "path": "./backend/db.sqlite"
+  },
+  {
+    "type": "sqlite",
+    "path": "e:\\Lib58\\backend\\db.sqlite3"
   }
 ]

@@ -28,10 +28,6 @@ class Book(models.Model):
     def __str__(self):
         return self.title
 
-
-class Issue(models.Model):
-    id = models.UUIDField(unique=True, primary_key=True, default=uuid.uuid4, editable=False)
-
 class IssueReturn(models.Model):
     id = models.UUIDField(unique=True, primary_key=True, default=uuid.uuid4, editable=False)
     STATUS_CHOICES = (

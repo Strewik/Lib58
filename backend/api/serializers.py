@@ -42,6 +42,9 @@ class BookSerializer(serializers.ModelSerializer):
 
 
 class IssueReturnSerializer(serializers.ModelSerializer):
+    book = BookSerializer(read_only=True)
+    user = UserSerializer(read_only=True)
+
     class Meta:
         model = IssueReturn
         fields = [
@@ -53,4 +56,6 @@ class IssueReturnSerializer(serializers.ModelSerializer):
             "return_date",
             "status",
         ]
-        read_only_fields = ["issue_date"]  # Issue date is auto-set and not editable
+        read_only_fields = ["issue_date", "book", "user", "status"]
+
+        

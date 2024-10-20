@@ -106,7 +106,6 @@ function BookList() {
       api
         .delete(`/api/book/${bookId}/`)
         .then((res) => {
-          // Remove the deleted book from the state
           setBooks(books.filter((book) => book.id !== bookId));
           console.log(`Book with ID: ${bookId} deleted successfully`);
         })

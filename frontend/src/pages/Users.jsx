@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import api from "../api";
 import { Link } from "react-router-dom";
 
 import "./Users.css";
@@ -15,9 +16,7 @@ function Users() {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get(
-        "http://localhost:8000/api/users"
-      );
+      const response = await api.get("http://localhost:8000/api/users/");
       setUsers(response.data);
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -67,21 +66,21 @@ function Users() {
         <tbody>
           {currentUsers.map((user) => (
             <tr key={user._id}>
-              <td>{user.name}</td>
+              <td>{user.full_name}</td>
               <td>{user.email}</td>
-              <td>{user.phone}</td>
+              <td>{user.phone_number}</td>
               <td>{user.address}</td>
-              <td>{user.idType}</td>
-              <td>{user.idNumber}</td>
+              <td>{user.id_type}</td>
+              <td>{user.id_number}</td>
               <td>
                 <button
-                  onClick={() => toggleStatus(user.id, user.accountStatus)}
+                  onClick={() => toggleStatus(user.id, user.status)}
                 >
                   {user.accountStatus}
                 </button>
               </td>
               <td>
-              <Link to={`/edit-user/${user._id}`}>Edit</Link>
+                <Link to={`/edit-user/${user._id}`}>Edit</Link>
               </td>
               {/* <td><button>Delete</button></td> */}
               <td>

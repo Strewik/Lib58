@@ -8,13 +8,38 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from .models import Note
+from .models import User
 from .models import Book
-from .serializers import BookSerializer, NoteSerializer, UserSerializer
 from .models import IssueReturn
 from .serializers import IssueReturnSerializer
-from .serializers import IssueReturnSerializer
+from django.contrib.auth import authenticate
+from rest_framework.authtoken.models import Token
+from django.utils import timezone
 
 # Create your views here.
+
+class RegisterUserView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [AllowAny]
+
+class LoginView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        email = request.data.get('email')
+        password = request.data.get('password')
+        user = authenticate(email=email, password=password)
+
+        if user is not None:
+            token, _ = Token.objects.get_or_create(user=user)
+            return Response({
+                'token': token.key,
+                'email': user.email,
+                'full_name': user.full_name,
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
 
 class UserListView(generics.ListAPIView):
     queryset = User.objects.all()

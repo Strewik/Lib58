@@ -5,6 +5,7 @@ import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import RegisterExaminer from './pages/RegisterExaminer';
+import Signup from './pages/RegisterAdmin';
 import Landing from './pages/Landing';
 
 const Logout = () => {
@@ -35,6 +36,8 @@ function App() {
             </ProtectedRoute>
           }
         />
+        
+        <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         <Route path="/logout" element={<Logout />} />
         <Route path="/register/admin" element={<RegisterAndLogout />} />

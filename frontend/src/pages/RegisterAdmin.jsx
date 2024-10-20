@@ -1,8 +1,9 @@
-import AdminForm from "../components/AdminForm";
+
+import AuthForm from '../components/AuthForm';
 
 const RegisterAdmin = () => {
   return (
-    <AdminForm route="/api/user/register/" method="register" />
+    <AuthForm route="/api/signup/"  isLogin={false} />
   )
 }
 

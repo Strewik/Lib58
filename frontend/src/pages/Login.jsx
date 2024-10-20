@@ -1,9 +1,18 @@
-import AdminForm from "../components/AdminForm"
+
+
+
+
+
+
+
+// import AdminForm from "../components/AdminForm"
+import AuthForm from '../components/AuthForm';
 
 const Login = () => {
   return (
-    <AdminForm route="/api/token/" method="login" />
+    <AuthForm route="/api/token/" isLogin={true} />
   )
 }
 
 export default Login
+

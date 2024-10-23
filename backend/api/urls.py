@@ -11,6 +11,10 @@ from .views import UserCountView
 from .views import BookStatsView
 from .views import PopularBooksView
 from .views import OverdueBooksView
+from .views import TopGenresView
+from .views import TotalBooksView
+
+
 
 
 urlpatterns = [
@@ -30,4 +34,7 @@ urlpatterns = [
     path("book-stats/", BookStatsView.as_view(), name="book-stats"),
     path("popular-books/", PopularBooksView.as_view(), name="popular-books"),
     path("overdue-books/", OverdueBooksView.as_view(), name="overdue-books"),
+    path('top-genres/', TopGenresView.as_view(), name='top-genres'),
+    path('total-books/', TotalBooksView.as_view(), name='total-books'),
+
 ]

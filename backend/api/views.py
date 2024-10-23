@@ -19,6 +19,10 @@ from .serializers import BookIssueSerializer
 from .serializers import UserCountSerializer
 from django.db.models import Count
 from django.db.models import Q
+from collections import Counter
+from django.db.models import Sum
+
+
 
 
 
@@ -206,3 +210,39 @@ class OverdueBooksView(APIView):
         ).count()
 
         return Response({"overdue_books": overdue_books_count})
+    
+class TopGenresView(APIView):
+    """
+    View to return the top 5 most popular genres based on issued books.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        # Get all books that have been issued
+        issued_books = IssueReturn.objects.filter(return_date__isnull=False).values_list('book__genre', flat=True)
+
+        # Split comma-separated genres and count occurrences
+        genre_counter = Counter()
+        for genres in issued_books:
+            if genres:
+                genre_list = [genre.strip() for genre in genres.split(',')]
+                genre_counter.update(genre_list)
+
+        # Get the top 5 most common genres
+        top_genres = genre_counter.most_common(5)
+
+        # Prepare the response data
+        response_data = [{"genre": genre, "count": count} for genre, count in top_genres]
+
+        return Response(response_data)
+    
+class TotalBooksView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        total_books = Book.objects.count()  #unique books
+        total_copies = Book.objects.aggregate(total_quantity=Sum('quantity'))['total_quantity'] 
+        return Response({
+            "total_books": total_books,
+            "total_copies": total_copies
+        })

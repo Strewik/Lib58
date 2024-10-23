@@ -1,7 +1,7 @@
 // Dashboard.js
-import { useEffect, useState } from 'react';
-import './Dashboard.css';
-import api from '../api';  // Importing the updated api client
+import { useEffect, useState } from "react";
+import "./Dashboard.css";
+import api from "../api"; // Importing the updated api client
 
 const Dashboard = () => {
   const [userCounts, setUserCounts] = useState({
@@ -19,15 +19,20 @@ const Dashboard = () => {
 
   const [popularBooks, setPopularBooks] = useState([]);
   const [overdueBooks, setOverdueBooks] = useState(0);
+  const [topGenres, setTopGenres] = useState([]);
+  const [totalBooks, setTotalBooks] = useState({
+    total_books: 0,
+    total_copies: 0,
+  });
 
   useEffect(() => {
     // Fetch the user counts from the API
     const fetchUserCounts = async () => {
       try {
-        const response = await api.get('/api/user-count/');
+        const response = await api.get("/api/user-count/");
         setUserCounts(response.data);
       } catch (error) {
-        console.error('Failed to fetch user counts:', error);
+        console.error("Failed to fetch user counts:", error);
       }
     };
 
@@ -37,10 +42,10 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchBookStats = async () => {
       try {
-        const response = await api.get('/api/book-stats/');
+        const response = await api.get("/api/book-stats/");
         setBookStats(response.data);
       } catch (error) {
-        console.error('Failed to fetch book stats:', error);
+        console.error("Failed to fetch book stats:", error);
       }
     };
 
@@ -50,10 +55,10 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchPopularBooks = async () => {
       try {
-        const response = await api.get('/api/popular-books/');
+        const response = await api.get("/api/popular-books/");
         setPopularBooks(response.data);
       } catch (error) {
-        console.error('Failed to fetch popular books:', error);
+        console.error("Failed to fetch popular books:", error);
       }
     };
 
@@ -63,20 +68,46 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchOverdueBooks = async () => {
       try {
-        const response = await api.get('/api/overdue-books/');
+        const response = await api.get("/api/overdue-books/");
         setOverdueBooks(response.data.overdue_books);
       } catch (error) {
-        console.error('Failed to fetch overdue books:', error);
+        console.error("Failed to fetch overdue books:", error);
       }
     };
 
     fetchOverdueBooks();
   }, []);
 
+  useEffect(() => {
+    const fetchTopGenres = async () => {
+      try {
+        const response = await api.get("/api/top-genres/");
+        setTopGenres(response.data);
+      } catch (error) {
+        console.error("Failed to fetch top genres:", error);
+      }
+    };
+
+    fetchTopGenres();
+  }, []);
+
+  useEffect(() => {
+    const fetchTotalBooks = async () => {
+      try {
+        const response = await api.get("/api/total-books/");
+        setTotalBooks(response.data.total_books);
+      } catch (error) {
+        console.error("Failed to fetch total books:", error);
+      }
+    };
+
+    fetchTotalBooks();
+  }, []);
+
   const cardData = [
-    { 
-      id: 1, 
-      title: 'User Statistics', 
+    {
+      id: 1,
+      title: "User Statistics",
       content: (
         <>
           <p>Total Users: {userCounts.total_users}</p>
@@ -86,9 +117,9 @@ const Dashboard = () => {
         </>
       ),
     },
-    { 
-      id: 2, 
-      title: 'Book Statistics', 
+    {
+      id: 2,
+      title: "Book Statistics",
       content: (
         <>
           <p>Total Books Issued: {bookStats.total_issued}</p>
@@ -97,59 +128,71 @@ const Dashboard = () => {
         </>
       ),
     },
-    { 
-      id: 3, 
-      title: 'Overdue Books', 
+    {
+      id: 3,
+      title: "Overdue Books",
       content: (
         <>
           <p>Overdue Books: {overdueBooks}</p>
         </>
       ),
     },
-    { id: 4, title: 'Card 4', content: 'This is content for card 4' },
-    { id: 5, title: 'Card 5', content: 'This is content for card 5' },
-    { id: 6, title: 'Card 6', content: 'This is content for card 6' },
-
+    {
+      id: 4,
+      title: "Top Genres",
+      content: (
+        <>
+          <p>Top Genres: {topGenres.map((genre) => genre.genre).join(", ")}</p>
+        </>
+      ),
+    },
+    { 
+      id: 5, 
+      title: 'Total Books and Copies', 
+      content: (
+        <>
+          <p>Total Books: {totalBooks.total_books}</p>
+          <p>Total Copies: {totalBooks.total_copies}</p>
+        </>
+      ),
+    },
+    { id: 6, title: "Card 6", content: "This is content for card 6" },
   ];
 
   return (
     <div className="dashboard">
-    <div className="card-grid">
-      {cardData.map((card) => (
-        <div key={card.id} className="card">
-          <h3 className="card-title">{card.title}</h3>
-          <div className="card-content">{card.content}</div>
-        </div>
-      ))}
-    </div>
+      <div className="card-grid">
+        {cardData.map((card) => (
+          <div key={card.id} className="card">
+            <h3 className="card-title">{card.title}</h3>
+            <div className="card-content">{card.content}</div>
+          </div>
+        ))}
+      </div>
 
-<div>
-<h3>Most Popular Books</h3>
-      <table className="popular-books-table">
-        <thead>
-          <tr>
-            <th>Title</th>
-            <th>Author</th>
-            <th>Times Issued</th>
-          </tr>
-        </thead>
-        <tbody>
-          {popularBooks.map((book, index) => (
-            <tr key={index}>
-              <td>{book.book__title}</td>
-              <td>{book.book__author}</td>
-              <td>{book.issue_count}</td>
+      <div>
+        <h3>Most Popular Books</h3>
+        <table className="popular-books-table">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Author</th>
+              <th>Times Issued</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-</div>
-
-
+          </thead>
+          <tbody>
+            {popularBooks.map((book, index) => (
+              <tr key={index}>
+                <td>{book.book__title}</td>
+                <td>{book.book__author}</td>
+                <td>{book.issue_count}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
 
 export default Dashboard;
-
-

@@ -12,18 +12,18 @@ function IssuedBooksList() {
 
   const fetchIssuedBooks = async () => {
     try {
-      const response = await api.get("/api/issue/"); // Fetch issued books from your API
+      const response = await api.get("/api/issue/");
       setIssuedBooks(response.data);
     } catch (error) {
       console.error("Error fetching issued books:", error);
     }
   };
 
-  // Handle book return by updating the status to 'returned'
+  
   const handleReturnBook = async (bookId) => {
     try {
       await api.patch(`/api/issues/${bookId}/return/`, { status: "returned" });
-      fetchIssuedBooks(); // Refresh the list after returning a book
+      fetchIssuedBooks(); 
       alert("Book returned successfully!");
     } catch (error) {
       console.error("Error returning the book:", error);
@@ -46,7 +46,7 @@ function IssuedBooksList() {
           className={activeTab === "notReturned" ? "active" : ""}
           onClick={() => setActiveTab("notReturned")}
         >
-          Not Returned
+          Issued
         </button>
         <button
           className={activeTab === "returned" ? "active" : ""}
@@ -75,7 +75,7 @@ function IssuedBooksList() {
               {filteredBooks.map((issue) => (
                 <tr key={issue.id}>
                   <td>{issue.book.title}</td>
-                  <td>{issue.user.username}</td>
+                  <td>{issue.user.full_name}</td>
                   <td>{issue.issue_date}</td>
                   <td>{issue.expected_return_date}</td>
                   {activeTab === "notReturned" && (

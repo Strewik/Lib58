@@ -68,6 +68,22 @@ class IssueReturnSerializer(serializers.ModelSerializer):
             "return_date",
             "status",
         ]
-        read_only_fields = ["issue_date", "book", "user", "status"]
+        read_only_fields = ["issue_date", "book", "user"]
 
+class BookIssueSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = IssueReturn
+        fields = ['id', 'book', 'user', 'issue_date', 'expected_return_date', 'status']
+    
+    def create(self, validated_data):
+        issue_return = IssueReturn.objects.create(**validated_data)
+        return issue_return
         
+class UserCountSerializer(serializers.Serializer):
+    total_users = serializers.IntegerField()
+    total_staff = serializers.IntegerField()
+    total_admin = serializers.IntegerField()
+    total_client = serializers.IntegerField()
+
+
+    

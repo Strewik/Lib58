@@ -42,3 +42,31 @@
     color: #555;
   }
   
+  .popular-books-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .popular-books-table th, .popular-books-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+  
+  .popular-books-table th {
+    background-color: #f2f2f2;
+    text-align: left;
+  }
+  
+  .popular-books-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  .popular-books-table tr:hover {
+    background-color: #ddd;
+  }
+  
+  .popular-books-table td {
+    text-align: left;
+  }
+  

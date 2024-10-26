@@ -21,9 +21,7 @@ from django.db.models import Count
 from django.db.models import Q
 from collections import Counter
 from django.db.models import Sum
-
-
-
+from .serializers import UserEditSerializer
 
 
 # Create your views here.
@@ -50,6 +48,17 @@ class LoginView(APIView):
             }, status=status.HTTP_200_OK)
         else:
             return Response({'error': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
+
+class UserDeleteView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, id):
+        try:
+            user = User.objects.get(id=id)
+            user.delete()
+            return Response({"message": "User deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+        except User.DoesNotExist:
+            return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
 
 class UserListView(generics.ListAPIView):
     queryset = User.objects.all()
@@ -170,7 +179,22 @@ class UserCountView(APIView):
         }
         serializer = UserCountSerializer(data)
         return Response(serializer.data)
-    
+
+class UserEditView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request, id):
+        try:
+            user = User.objects.get(id=id)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = UserEditSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 class BookStatsView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -187,7 +211,7 @@ class BookStatsView(APIView):
 
 class PopularBooksView(APIView):
     """
-    View to return the 20 most issued books.
+     20 most issued books.
     """
     permission_classes = [IsAuthenticated]
 
@@ -240,7 +264,7 @@ class TotalBooksView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        total_books = Book.objects.count()  #unique books
+        total_books = Book.objects.count() 
         total_copies = Book.objects.aggregate(total_quantity=Sum('quantity'))['total_quantity'] 
         return Response({
             "total_books": total_books,

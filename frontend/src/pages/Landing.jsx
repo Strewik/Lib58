@@ -58,7 +58,7 @@ const HomePage = () => {
 
         {/* Copyright */}
         <footer className="copyright">
-          <p>&copy; 2024 Your Company</p>
+          <p>&copy; 2024 Lib58</p>
         </footer>
       </aside>
 

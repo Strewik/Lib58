@@ -8,7 +8,6 @@
     align-items: center;
   }
   
-  /* Individual Card Styling */
   .card {
     width: 250px;
     height: 150px;
@@ -29,14 +28,12 @@
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
   }
   
-  /* Card Title Styling */
   .card-title {
     font-size: 1.2rem;
     font-weight: bold;
     margin-bottom: 10px;
   }
-  
-  /* Card Content Styling */
+
   .card-content {
     font-size: 1rem;
     color: #555;

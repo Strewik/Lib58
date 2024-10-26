@@ -26,7 +26,25 @@ class UserSerializer(serializers.ModelSerializer):
             status=validated_data.get('status', 'active')
         )
         return user
-
+class UserEditSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['full_name', 'email', 'phone_number', 'id_type', 'id_number', 'address', 'role', 'status']
+        extra_kwargs = {
+            'email': {'read_only': True},  
+        }
+        
+    def update(self, instance, validated_data):
+        instance.full_name = validated_data.get('full_name', instance.full_name)
+        instance.phone_number = validated_data.get('phone_number', instance.phone_number)
+        instance.id_type = validated_data.get('id_type', instance.id_type)
+        instance.id_number = validated_data.get('id_number', instance.id_number)
+        instance.address = validated_data.get('address', instance.address)
+        instance.role = validated_data.get('role', instance.role)
+        instance.status = validated_data.get('status', instance.status)
+        
+        instance.save()
+        return instance
 
 class NoteSerializer(serializers.ModelSerializer):
     class Meta:
@@ -86,4 +104,3 @@ class UserCountSerializer(serializers.Serializer):
     total_client = serializers.IntegerField()
 
 
-    

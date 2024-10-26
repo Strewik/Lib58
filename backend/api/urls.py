@@ -13,8 +13,8 @@ from .views import PopularBooksView
 from .views import OverdueBooksView
 from .views import TopGenresView
 from .views import TotalBooksView
-
-
+from .views import UserEditView
+from .views import UserDeleteView
 
 
 urlpatterns = [
@@ -36,5 +36,7 @@ urlpatterns = [
     path("overdue-books/", OverdueBooksView.as_view(), name="overdue-books"),
     path('top-genres/', TopGenresView.as_view(), name='top-genres'),
     path('total-books/', TotalBooksView.as_view(), name='total-books'),
+    path('edit-user/<uuid:id>/', UserEditView.as_view(), name='edit-user'),
+    path('delete-user/<uuid:id>/', UserDeleteView.as_view(), name='delete-user'),
 
 ]

@@ -1,4 +1,3 @@
-# from django.contrib.auth.models import User
 from rest_framework import serializers
 from .models import User
 from .models import Note
@@ -11,40 +10,65 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'full_name', 'email', 'phone_number', 'id_type', 'id_number', 'address', 'role', 'status', 'password']
+        fields = [
+            "id",
+            "full_name",
+            "email",
+            "phone_number",
+            "id_type",
+            "id_number",
+            "address",
+            "role",
+            "status",
+            "password",
+        ]
 
     def create(self, validated_data):
         user = User.objects.create_user(
-            email=validated_data['email'],
-            full_name=validated_data['full_name'],
-            password=validated_data['password'],
-            phone_number=validated_data.get('phone_number'),
-            id_type=validated_data.get('id_type'),
-            id_number=validated_data.get('id_number'),
-            address=validated_data.get('address'),
-            role=validated_data.get('role', 'client'),
-            status=validated_data.get('status', 'active')
+            email=validated_data["email"],
+            full_name=validated_data["full_name"],
+            password=validated_data["password"],
+            phone_number=validated_data.get("phone_number"),
+            id_type=validated_data.get("id_type"),
+            id_number=validated_data.get("id_number"),
+            address=validated_data.get("address"),
+            role=validated_data.get("role", "client"),
+            status=validated_data.get("status", "active"),
         )
         return user
+
+
 class UserEditSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['full_name', 'email', 'phone_number', 'id_type', 'id_number', 'address', 'role', 'status']
+        fields = [
+            "full_name",
+            "email",
+            "phone_number",
+            "id_type",
+            "id_number",
+            "address",
+            "role",
+            "status",
+        ]
         extra_kwargs = {
-            'email': {'read_only': True},  
+            "email": {"read_only": True},
         }
-        
+
     def update(self, instance, validated_data):
-        instance.full_name = validated_data.get('full_name', instance.full_name)
-        instance.phone_number = validated_data.get('phone_number', instance.phone_number)
-        instance.id_type = validated_data.get('id_type', instance.id_type)
-        instance.id_number = validated_data.get('id_number', instance.id_number)
-        instance.address = validated_data.get('address', instance.address)
-        instance.role = validated_data.get('role', instance.role)
-        instance.status = validated_data.get('status', instance.status)
-        
+        instance.full_name = validated_data.get("full_name", instance.full_name)
+        instance.phone_number = validated_data.get(
+            "phone_number", instance.phone_number
+        )
+        instance.id_type = validated_data.get("id_type", instance.id_type)
+        instance.id_number = validated_data.get("id_number", instance.id_number)
+        instance.address = validated_data.get("address", instance.address)
+        instance.role = validated_data.get("role", instance.role)
+        instance.status = validated_data.get("status", instance.status)
+
         instance.save()
         return instance
+
 
 class NoteSerializer(serializers.ModelSerializer):
     class Meta:
@@ -59,16 +83,10 @@ class NoteSerializer(serializers.ModelSerializer):
 
 
 class BookSerializer(serializers.ModelSerializer):
+    availability = serializers.ReadOnlyField()
     class Meta:
         model = Book
         fields = "__all__"
-
-
-# class IssueReturnSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = IssueReturn
-#         fields = ['id', 'book', 'user', 'issue_date','expected_return_date' 'return_date', 'status']
-#         read_only_fields = ['issue_date']  # Issue date should not be editable
 
 
 class IssueReturnSerializer(serializers.ModelSerializer):
@@ -88,19 +106,19 @@ class IssueReturnSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ["issue_date", "book", "user"]
 
+
 class BookIssueSerializer(serializers.ModelSerializer):
     class Meta:
         model = IssueReturn
-        fields = ['id', 'book', 'user', 'issue_date', 'expected_return_date', 'status']
-    
+        fields = ["id", "book", "user", "issue_date", "expected_return_date", "status"]
+
     def create(self, validated_data):
         issue_return = IssueReturn.objects.create(**validated_data)
         return issue_return
-        
+
+
 class UserCountSerializer(serializers.Serializer):
     total_users = serializers.IntegerField()
     total_staff = serializers.IntegerField()
     total_admin = serializers.IntegerField()
     total_client = serializers.IntegerField()
-
-

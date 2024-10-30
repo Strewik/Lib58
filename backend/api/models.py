@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 import uuid
 from django.conf import settings
+from datetime import datetime, date
 
 
 # Create your models here.
@@ -95,6 +96,11 @@ class Book(models.Model):
     published = models.IntegerField()
     available = models.IntegerField(default=0)
 
+    @property
+    def availability(self):
+        issued_count = IssueReturn.objects.filter(book=self, status='issued').count()
+        return self.quantity - issued_count
+
     def __str__(self):
         return self.title
 
@@ -110,12 +116,15 @@ class IssueReturn(models.Model):
     expected_return_date = models.DateField()
     return_date = models.DateField(null=True, blank=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='issued')
-
+    fine = models.DecimalField(max_digits=5, decimal_places=2, default=0.00)
 
     def __str__(self):
         return f"{self.book.title} issued by {self.user.username}"
 
     def save(self, *args, **kwargs):
+        if self.return_date and isinstance(self.return_date, datetime):
+            self.return_date = self.return_date.date()
+
         if self.status == 'issued':
             total_quantity = self.book.quantity
             copies_issued = IssueReturn.objects.filter(book=self.book, status='issued').count()
@@ -125,7 +134,16 @@ class IssueReturn(models.Model):
                 self.book.save()
             else:
                 raise ValueError("No copies available for issuing")
+
         elif self.status == 'returned':
+            return_date = self.return_date
+           
+
+            if return_date and return_date > self.expected_return_date:
+                self.fine = 10.00
+            else:
+                self.fine = 0.00
+
             self.book.available += 1
             self.book.save()
 

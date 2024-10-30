@@ -81,9 +81,7 @@ class BookIssueView(generics.CreateAPIView):
         book_id = request.data.get('book')
         try:
             book = Book.objects.get(id=book_id)
-            # Check if the number of copies issued is less than the available quantity
-            issued_count = IssueReturn.objects.filter(book=book, status='issued').count()
-            if issued_count >= book.quantity:
+            if book.availability <= 0:
                 return Response({"error": "No copies available for issuing"}, status=status.HTTP_400_BAD_REQUEST)
 
             # Proceed with issuing the book
@@ -91,14 +89,11 @@ class BookIssueView(generics.CreateAPIView):
             serializer.is_valid(raise_exception=True)
             self.perform_create(serializer)
 
-            # Update the available count on the book
-            book.available = book.quantity - (issued_count + 1)
-            book.save()
-
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         except Book.DoesNotExist:
             return Response({"error": "Book not found"}, status=status.HTTP_404_NOT_FOUND)
+
 class CreateUserView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -153,6 +148,10 @@ class ReturnBookView(APIView):
             issue = IssueReturn.objects.get(id=pk)
             if issue.status == 'returned':
                 return Response({'detail': 'Book already returned.'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            overdue = issue.expected_return_date < timezone.now().date()
+            if overdue and not request.data.get('fine_paid'):
+                return Response({'detail': 'Book is overdue - Fine $10. Confirm fine payment to return.'}, status=status.HTTP_400_BAD_REQUEST)
             
             issue.status = 'returned'
             issue.return_date = timezone.now()  
@@ -270,3 +269,4 @@ class TotalBooksView(APIView):
             "total_books": total_books,
             "total_copies": total_copies
         })
+

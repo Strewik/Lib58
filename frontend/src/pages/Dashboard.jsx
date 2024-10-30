@@ -95,7 +95,7 @@ const Dashboard = () => {
     const fetchTotalBooks = async () => {
       try {
         const response = await api.get("/api/total-books/");
-        setTotalBooks(response.data.total_books);
+        setTotalBooks(response.data);
       } catch (error) {
         console.error("Failed to fetch total books:", error);
       }

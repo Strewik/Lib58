@@ -15,32 +15,27 @@ const AuthForm = ({ isLogin,route }) => {
 
   const navigate = useNavigate();
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // const endpoint = isLogin ? "login" : "signup";
+  
     const payload = isLogin
       ? { email, password }
       : { email, password, full_name: fullName, phone_number: phoneNumber, address, id_type, id_number };
-
+  
     try {
       const res = await api.post(route, payload);
       if (isLogin) {
         localStorage.setItem(ACCESS_TOKEN, res.data.access);
         localStorage.setItem(REFRESH_TOKEN, res.data.refresh);
         navigate("/");
-     }else{
-        navigate("/login");
-     }
-    //   localStorage.setItem("ACCESS_TOKEN", response.data.access);
-    //   alert("Authentication successful!");
+      } else {
+        navigate("/login");  // Redirect to login page after successful signup
+      }
     } catch (error) {
       console.error("Error during authentication:", error.response?.data);
       alert("Error: " + error.response?.data?.detail || "Something went wrong");
-    
-  }
-  }
+    }
+  };
 
   return (
     <div className="auth-form">

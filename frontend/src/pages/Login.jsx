@@ -1,10 +1,3 @@
-
-
-
-
-
-
-
 // import AdminForm from "../components/AdminForm"
 import AuthForm from '../components/AuthForm';
 

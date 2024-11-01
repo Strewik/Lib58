@@ -280,7 +280,7 @@ class ClientInfoView(APIView):
         user = request.user
         return Response({"full_name": user.full_name})
 
-class OverdueBooksView(APIView):
+class ClientOverdueBooksView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
@@ -304,12 +304,11 @@ class UpcomingDueBooksView(APIView):
         serializer = UpcomingDueBookSerializer(upcoming_books, many=True)
         return Response(serializer.data)
 
-class BookListView(APIView):
+class ClientBookListView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
         books = Book.objects.all()
         serializer = BookSerializer(books, many=True)
         return Response(serializer.data)
-    
     

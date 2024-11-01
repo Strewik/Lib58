@@ -3,6 +3,8 @@ from .models import User
 from .models import Note
 from .models import Book
 from .models import IssueReturn
+from datetime import date
+
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -144,4 +146,3 @@ class BookSerializer(serializers.ModelSerializer):
         model = Book
         fields = ['id', 'title', 'author', 'genre']
 
-        

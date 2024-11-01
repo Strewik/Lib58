@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../api"
 
 const ClientDashboard = () => {
   const [clientName, setClientName] = useState("");
@@ -11,17 +11,17 @@ const ClientDashboard = () => {
   useEffect(() => {
     const fetchClientData = async () => {
       try {
-        const userData = await axios.get('/api/client-info/');
+        const userData = await api.get('/api/client-info/');
         setClientName(userData.data.full_name);
   
-        const overdueResponse = await axios.get('/api/overdue-books/');
-        console.log("Overdue books data:", overdueResponse.data);  // Log to confirm structure
+        const overdueResponse = await api.get('/api/client-overdue-books/');
+        console.log("Overdue books data:", overdueResponse.data);
         setOverdueBooks(Array.isArray(overdueResponse.data) ? overdueResponse.data : []);  // Ensure array
   
-        const upcomingDueResponse = await axios.get('/api/upcoming-due-books/');
+        const upcomingDueResponse = await api.get('/api/upcoming-due-books/');
         setUpcomingDueBooks(Array.isArray(upcomingDueResponse.data) ? upcomingDueResponse.data : []);
   
-        const allBooksResponse = await axios.get('/api/books/');
+        const allBooksResponse = await api.get('/api/client-books/');
         setBooks(Array.isArray(allBooksResponse.data) ? allBooksResponse.data : []);
       } catch (error) {
         console.error("Error fetching client data:", error);

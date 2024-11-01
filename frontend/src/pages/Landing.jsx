@@ -5,6 +5,7 @@ import Dashboard from "./Dashboard";
 import Users from "./Users";
 import BookList from "./BookList";
 import IssueReturn from "./IssueReturn";
+import ClientDashboard from "./ClientDashboard";
 
 const HomePage = () => {
   const [selectedMenuItem, setSelectedMenuItem] = useState("Dashboard");
@@ -15,10 +16,8 @@ const HomePage = () => {
 
   return (
     <div className="container">
-      {/* Side Menu */}
       <aside className="side-menu">
         <div className="logo-section">
-          {/* Logo */}
           <img
             src="https://images.unsplash.com/photo-1492052722242-2554d0e99e3a?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTl8fGJvb2t8ZW58MHx8MHx8fDA%3D"
             alt="Logo"
@@ -26,7 +25,6 @@ const HomePage = () => {
           />
         </div>
 
-        {/* Menu Items */}
         <nav className="menu-items">
           <ul>
             <li
@@ -53,6 +51,12 @@ const HomePage = () => {
             >
               Issue/Return
             </li>
+            <li
+              className="menu-link"
+              onClick={() => handleMenuItemClick("ClientDashboard")}
+            >
+              Client
+            </li>
           </ul>
         </nav>
 
@@ -69,6 +73,7 @@ const HomePage = () => {
           {selectedMenuItem === "Users" && <Users />}
           {selectedMenuItem === "Books" && <BookList />}
           {selectedMenuItem === "Issue/Return" && <IssueReturn />}
+          {selectedMenuItem === "ClientDashboard" && <ClientDashboard />}
           <Outlet />
         </div>
       </main>

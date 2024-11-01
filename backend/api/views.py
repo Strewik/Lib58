@@ -20,8 +20,11 @@ from .serializers import UserCountSerializer
 from django.db.models import Count
 from django.db.models import Q
 from collections import Counter
+from datetime import timedelta
 from django.db.models import Sum
 from .serializers import UserEditSerializer
+from .serializers import OverdueBookSerializer, UpcomingDueBookSerializer, BookSerializer
+
 
 
 # Create your views here.
@@ -270,3 +273,43 @@ class TotalBooksView(APIView):
             "total_copies": total_copies
         })
 
+class ClientInfoView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        return Response({"full_name": user.full_name})
+
+class OverdueBooksView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        overdue_books = IssueReturn.objects.filter(
+            user=request.user,
+            expected_return_date__lt=date.today(),
+            return_date__isnull=True
+        )
+        serializer = OverdueBookSerializer(overdue_books, many=True)
+        return Response(serializer.data)
+
+class UpcomingDueBooksView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        upcoming_books = IssueReturn.objects.filter(
+            user=request.user,
+            expected_return_date__range=[date.today(), date.today() + timedelta(days=2)],
+            return_date__isnull=True
+        )
+        serializer = UpcomingDueBookSerializer(upcoming_books, many=True)
+        return Response(serializer.data)
+
+class BookListView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        books = Book.objects.all()
+        serializer = BookSerializer(books, many=True)
+        return Response(serializer.data)
+    
+    

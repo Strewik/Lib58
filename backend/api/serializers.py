@@ -116,9 +116,32 @@ class BookIssueSerializer(serializers.ModelSerializer):
         issue_return = IssueReturn.objects.create(**validated_data)
         return issue_return
 
-
 class UserCountSerializer(serializers.Serializer):
     total_users = serializers.IntegerField()
     total_staff = serializers.IntegerField()
     total_admin = serializers.IntegerField()
     total_client = serializers.IntegerField()
+
+class OverdueBookSerializer(serializers.ModelSerializer):
+    fine = serializers.SerializerMethodField()
+
+    class Meta:
+        model = IssueReturn
+        fields = ['id', 'book', 'date_issued', 'expected_return_date', 'fine']
+
+    def get_fine(self, obj):
+        # Example fine calculation; you might adjust based on your requirements
+        days_overdue = (date.today() - obj.expected_return_date).days
+        return days_overdue * 2  # Assuming $2 per overdue day
+
+class UpcomingDueBookSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = IssueReturn
+        fields = ['id', 'book', 'expected_return_date']
+
+class BookSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Book
+        fields = ['id', 'title', 'author', 'genre']
+
+        

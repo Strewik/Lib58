@@ -1,5 +1,3 @@
-// UserEditForm.js
-
 import { useState, useEffect } from "react";
 import api from "../api";
 import "./EditUserForm.css"
@@ -119,3 +117,4 @@ const UserEditForm = ({ user, onClose }) => {
 };
 
 export default UserEditForm;
+

@@ -2,20 +2,18 @@ import { useState, useEffect } from "react";
 import api from "../api";
 
 function IssueBookForm({ book, onClose, onSave }) {
-  const [userId, setUserId] = useState(""); // Store the selected user's ID
-  const [userName, setUserName] = useState(""); // Store the selected user's name for input display
-  const [users, setUsers] = useState([]); // List of users for dropdown
-  const [issueDate, setIssueDate] = useState(""); // Default issue date is set below
+  const [userId, setUserId] = useState(""); 
+  const [userName, setUserName] = useState(""); 
+  const [users, setUsers] = useState([]); 
+  const [issueDate, setIssueDate] = useState(""); 
   const [expectedReturnDate, setExpectedReturnDate] = useState("");
-  const [status, setStatus] = useState("issued"); // Set default status to "issued"
+  const [status, setStatus] = useState("issued"); 
 
-  // Fetch users from the API
   useEffect(() => {
     api.get("/api/users/").then((res) => setUsers(res.data));
 
-    // Set default issue date as today's date
     const today = new Date();
-    const formattedDate = today.toISOString().split('T')[0]; // Format date as YYYY-MM-DD
+    const formattedDate = today.toISOString().split('T')[0]; 
     setIssueDate(formattedDate);
   }, []);
 
@@ -47,15 +45,13 @@ function IssueBookForm({ book, onClose, onSave }) {
     }
   };
 
-  // Filter users based on the typed input
   const filteredUsers = users.filter((user) =>
     user.full_name.toLowerCase().includes(userName.toLowerCase())
   );
 
-  // When a user is selected from the dropdown
   const handleUserSelect = (selectedUserId, selectedUserName) => {
     setUserId(selectedUserId);
-    setUserName(selectedUserName); // Fill input with selected user's name
+    setUserName(selectedUserName); 
   };
 
   return (

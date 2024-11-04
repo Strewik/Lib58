@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import api from "../api"
+import api from "../api";
+import "./ClientDashboard.css";
 
 const ClientDashboard = () => {
   const [clientName, setClientName] = useState("");
@@ -11,35 +12,40 @@ const ClientDashboard = () => {
   useEffect(() => {
     const fetchClientData = async () => {
       try {
-        const userData = await api.get('/api/client-info/');
+        const userData = await api.get("/api/client-info/");
         setClientName(userData.data.full_name);
-  
-        const overdueResponse = await api.get('/api/client-overdue-books/');
-        console.log("Overdue books data:", overdueResponse.data);
-        setOverdueBooks(Array.isArray(overdueResponse.data) ? overdueResponse.data : []);  // Ensure array
-  
-        const upcomingDueResponse = await api.get('/api/upcoming-due-books/');
-        setUpcomingDueBooks(Array.isArray(upcomingDueResponse.data) ? upcomingDueResponse.data : []);
-  
-        const allBooksResponse = await api.get('/api/client-books/');
-        setBooks(Array.isArray(allBooksResponse.data) ? allBooksResponse.data : []);
+
+        const overdueResponse = await api.get("/api/client-overdue-books/");
+        setOverdueBooks(
+          Array.isArray(overdueResponse.data) ? overdueResponse.data : []
+        );
+
+        const upcomingDueResponse = await api.get("/api/upcoming-due-books/");
+        setUpcomingDueBooks(
+          Array.isArray(upcomingDueResponse.data)
+            ? upcomingDueResponse.data
+            : []
+        );
+
+        const allBooksResponse = await api.get("/api/books/");
+        setBooks(
+          Array.isArray(allBooksResponse.data) ? allBooksResponse.data : []
+        );
       } catch (error) {
         console.error("Error fetching client data:", error);
       }
     };
-  
+
     fetchClientData();
   }, []);
-  
-  
 
   const filteredBooks = books.filter((book) =>
     book.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
-    <div>
-      <div className="header">
+    <div className="dashboard-container">
+      <div className="header greeting">
         <h2>Hello, {clientName}</h2>
       </div>
 
@@ -81,11 +87,32 @@ const ClientDashboard = () => {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
-        <ul>
-          {filteredBooks.map((book) => (
-            <li key={book.id}>{book.title}</li>
-          ))}
-        </ul>
+        <table>
+          <thead>
+            <tr>
+              <th>Book Code</th>
+              <th>Title</th>
+              <th>Author</th>
+              <th>Genre</th>
+              <th>Quantity</th>
+              <th>Availability</th>
+              <th>Year of Publication</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredBooks.map((book) => (
+              <tr key={book.id}>
+                <td>{book.code}</td>
+                <td>{book.title}</td>
+                <td>{book.author}</td>
+                <td>{book.genre}</td>
+                <td>{book.quantity}</td>
+                <td>{book.availability}</td>
+                <td>{book.published}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </section>
     </div>
   );

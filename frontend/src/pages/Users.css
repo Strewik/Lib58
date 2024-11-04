@@ -3,12 +3,10 @@
   }
   
   .header {
-    /* display: inline-block; */
     margin-right: auto;
   }
   
   .add-user-button {
-    /* display: inline-block; */
     margin-left: auto;
     background-color: #4ca1af;
     color: white;

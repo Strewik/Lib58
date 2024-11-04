@@ -1,7 +1,6 @@
-// Dashboard.js
 import { useEffect, useState } from "react";
 import "./Dashboard.css";
-import api from "../api"; // Importing the updated api client
+import api from "../api"; 
 
 const Dashboard = () => {
   const [userCounts, setUserCounts] = useState({
@@ -26,7 +25,6 @@ const Dashboard = () => {
   });
 
   useEffect(() => {
-    // Fetch the user counts from the API
     const fetchUserCounts = async () => {
       try {
         const response = await api.get("/api/user-count/");
@@ -196,3 +194,4 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+

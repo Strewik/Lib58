@@ -13,7 +13,6 @@ function AddBookForm({ book, onClose, onSave }) {
     published: ''
   });
 
-  // Effect to preload form data if we're editing a book
   useEffect(() => {
     if (book) {
       setFormData({
@@ -148,7 +147,7 @@ function AddBookForm({ book, onClose, onSave }) {
         </div>
         <button type="submit">{book ? 'Update Book' : 'Add Book'}</button>
       </form>
-      <button onClick={onClose}>Cancel</button> {/* Close button to close modal */}
+      <button onClick={onClose}>Cancel</button>
     </div>
   );
 }

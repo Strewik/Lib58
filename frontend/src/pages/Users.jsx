@@ -1,5 +1,3 @@
-// Users.js
-
 import { useState, useEffect } from "react";
 import api from "../api";
 import { Link } from "react-router-dom";

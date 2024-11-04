@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
-import "./Landing.css"; // Import the regular CSS
+import "./Landing.css"; 
 import Dashboard from "./Dashboard";
 import Users from "./Users";
 import BookList from "./BookList";
@@ -60,13 +60,11 @@ const HomePage = () => {
           </ul>
         </nav>
 
-        {/* Copyright */}
         <footer className="copyright">
           <p>&copy; 2024 Lib58</p>
         </footer>
       </aside>
 
-      {/* Main Content Area */}
       <main className="main-content">
         <div className="main-overlay">
           {selectedMenuItem === "Dashboard" && <Dashboard />}

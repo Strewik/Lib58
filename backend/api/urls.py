@@ -43,3 +43,4 @@ urlpatterns = [
     path("upcoming-due-books/", UpcomingDueBooksView.as_view(), name="upcoming-due-books"),
     path("client-books/", ClientBookListView.as_view(), name="books"),
 ]
+

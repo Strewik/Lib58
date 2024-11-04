@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 import api from "../api";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants";
 
-
-const AuthForm = ({ isLogin,route }) => {
+const AuthForm = ({ isLogin, route }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
@@ -12,16 +12,23 @@ const AuthForm = ({ isLogin,route }) => {
   const [address, setAddress] = useState("");
   const [id_type, setId_type] = useState("");
   const [id_number, setId_number] = useState("");
-
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     const payload = isLogin
       ? { email, password }
-      : { email, password, full_name: fullName, phone_number: phoneNumber, address, id_type, id_number };
-  
+      : {
+          email,
+          password,
+          full_name: fullName,
+          phone_number: phoneNumber,
+          address,
+          id_type,
+          id_number,
+        };
+
     try {
       const res = await api.post(route, payload);
       if (isLogin) {
@@ -29,7 +36,7 @@ const AuthForm = ({ isLogin,route }) => {
         localStorage.setItem(REFRESH_TOKEN, res.data.refresh);
         navigate("/");
       } else {
-        navigate("/login");  // Redirect to login page after successful signup
+        navigate("/login"); 
       }
     } catch (error) {
       console.error("Error during authentication:", error.response?.data);

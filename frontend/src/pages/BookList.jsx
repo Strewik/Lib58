@@ -9,7 +9,7 @@ function CustomModal({ show, onClose, children }) {
   if (!show) return null;
 
   const handleModalClick = (e) => {
-    e.stopPropagation(); // Prevents modal from closing when clicking inside
+    e.stopPropagation(); 
   };
 
   return (
@@ -30,7 +30,7 @@ function BookList() {
   const [sortBy, setSortBy] = useState("");
   const [sortOrder, setSortOrder] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedBook, setSelectedBook] = useState(null); // To hold book data when editing
+  const [selectedBook, setSelectedBook] = useState(null); 
   const [isIssueModalOpen, setIsIssueModalOpen] = useState(false);
 
   const location = useLocation();
@@ -100,7 +100,7 @@ function BookList() {
     setSelectedBook(null);
   };
 
-  // DELETE Function
+
   const deleteBook = (bookId) => {
     if (window.confirm("Are you sure you want to delete this book?")) {
       api
@@ -172,7 +172,7 @@ function BookList() {
         </tbody>
       </table>
 
-      {/* Custom Modal to add or edit a book */}
+
       <CustomModal show={isModalOpen} onClose={closeModal}>
         <AddBookForm book={selectedBook} onClose={closeModal} onSave={fetchBooks} />
       </CustomModal>

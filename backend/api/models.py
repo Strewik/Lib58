@@ -1,11 +1,16 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.contrib.auth.models import (
+    AbstractBaseUser,
+    BaseUserManager,
+    PermissionsMixin,
+)
 import uuid
 from django.conf import settings
 from datetime import datetime, date
 
 
 # Create your models here.
+
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, full_name, password=None, **extra_fields):
@@ -18,75 +23,80 @@ class CustomUserManager(BaseUserManager):
         return user
 
     def create_superuser(self, email, full_name, password=None, **extra_fields):
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault("is_superuser", True)
 
         return self.create_user(email, full_name, password, **extra_fields)
 
-# Custom User Model
+
 class User(AbstractBaseUser, PermissionsMixin):
-    id = models.UUIDField(unique=True, primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(
+        unique=True, primary_key=True, default=uuid.uuid4, editable=False
+    )
     full_name = models.CharField(max_length=255)
     email = models.EmailField(unique=True)
     phone_number = models.CharField(max_length=20, blank=True, null=True)
     id_type = models.CharField(max_length=50, blank=True, null=True)
     id_number = models.CharField(max_length=50, blank=True, null=True)
     address = models.CharField(max_length=255, blank=True, null=True)
-    
-    # Role
+
     ROLE_CHOICES = (
-        ('client', 'Client'),
-        ('staff', 'Staff'),
-        ('admin', 'Admin'),
+        ("client", "Client"),
+        ("staff", "Staff"),
+        ("admin", "Admin"),
     )
-    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='client')
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default="client")
 
-    # Status
     STATUS_CHOICES = (
-        ('active', 'Active'),
-        ('suspended', 'Suspended'),
+        ("active", "Active"),
+        ("suspended", "Suspended"),
     )
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='active')
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="supended")
 
-    # Admin Fields
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
 
     objects = CustomUserManager()
 
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['full_name']
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = ["full_name"]
 
     groups = models.ManyToManyField(
-        'auth.Group',
-        related_name='custom_user_groups',  # Custom related name
+        "auth.Group",
+        related_name="custom_user_groups",  
         blank=True,
-        help_text='The groups this user belongs to.',
-        verbose_name='groups',
+        help_text="The groups this user belongs to.",
+        verbose_name="groups",
     )
 
     user_permissions = models.ManyToManyField(
-        'auth.Permission',
-        related_name='custom_user_permissions',  # Custom related name
+        "auth.Permission",
+        related_name="custom_user_permissions", 
         blank=True,
-        help_text='Specific permissions for this user.',
-        verbose_name='user permissions',
+        help_text="Specific permissions for this user.",
+        verbose_name="user permissions",
     )
 
     def __str__(self):
         return self.email
-    
+
+
 class Note(models.Model):
     title = models.CharField(max_length=100)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="notes")
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="notes"
+    )
 
     def __str__(self):
         return self.title
-    
+
+
 class Book(models.Model):
-    id = models.UUIDField(unique=True, primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(
+        unique=True, primary_key=True, default=uuid.uuid4, editable=False
+    )
     code = models.CharField(max_length=50, unique=True)
     title = models.CharField(max_length=225)
     author = models.CharField(max_length=225)
@@ -98,24 +108,27 @@ class Book(models.Model):
 
     @property
     def availability(self):
-        issued_count = IssueReturn.objects.filter(book=self, status='issued').count()
+        issued_count = IssueReturn.objects.filter(book=self, status="issued").count()
         return self.quantity - issued_count
 
     def __str__(self):
         return self.title
 
+
 class IssueReturn(models.Model):
-    id = models.UUIDField(unique=True, primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(
+        unique=True, primary_key=True, default=uuid.uuid4, editable=False
+    )
     STATUS_CHOICES = (
-        ('issued', 'Issued'),
-        ('returned', 'Returned'),
+        ("issued", "Issued"),
+        ("returned", "Returned"),
     )
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     issue_date = models.DateField(auto_now_add=True)
     expected_return_date = models.DateField()
     return_date = models.DateField(null=True, blank=True)
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='issued')
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="issued")
     fine = models.DecimalField(max_digits=5, decimal_places=2, default=0.00)
 
     def __str__(self):
@@ -125,9 +138,11 @@ class IssueReturn(models.Model):
         if self.return_date and isinstance(self.return_date, datetime):
             self.return_date = self.return_date.date()
 
-        if self.status == 'issued':
+        if self.status == "issued":
             total_quantity = self.book.quantity
-            copies_issued = IssueReturn.objects.filter(book=self.book, status='issued').count()
+            copies_issued = IssueReturn.objects.filter(
+                book=self.book, status="issued"
+            ).count()
 
             if copies_issued < total_quantity:
                 self.book.available = total_quantity - copies_issued
@@ -135,9 +150,8 @@ class IssueReturn(models.Model):
             else:
                 raise ValueError("No copies available for issuing")
 
-        elif self.status == 'returned':
+        elif self.status == "returned":
             return_date = self.return_date
-           
 
             if return_date and return_date > self.expected_return_date:
                 self.fine = 10.00
@@ -149,3 +163,4 @@ class IssueReturn(models.Model):
 
         super().save(*args, **kwargs)
 
+        

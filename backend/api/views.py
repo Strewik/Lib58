@@ -20,11 +20,11 @@ from .serializers import UserCountSerializer
 from django.db.models import Count
 from django.db.models import Q
 from collections import Counter
-from datetime import timedelta
+from datetime import timedelta, date
 from django.db.models import Sum
 from .serializers import UserEditSerializer
 from .serializers import OverdueBookSerializer, UpcomingDueBookSerializer, BookSerializer
-
+from .utils import userToken
 
 
 # Create your views here.
@@ -48,9 +48,11 @@ class LoginView(APIView):
                 'token': token.key,
                 'email': user.email,
                 'full_name': user.full_name,
+                'role': user.role,
             }, status=status.HTTP_200_OK)
         else:
             return Response({'error': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
+   
 
 class UserDeleteView(APIView):
     permission_classes = [IsAuthenticated]
@@ -81,13 +83,24 @@ class BookIssueView(generics.CreateAPIView):
     serializer_class = BookIssueSerializer
 
     def create(self, request, *args, **kwargs):
-        book_id = request.data.get('book')
+        user = request.user
+        book_id = request.data.get("book")
+
+        if user.status == "suspended":
+            return Response({"error": "Your account is suspended and you cannot borrow books."},
+                            status=status.HTTP_403_FORBIDDEN)
+
+        active_issues = IssueReturn.objects.filter(user=user, status="issued").count()
+        if active_issues >= 3:
+            return Response({"error": "You have reached the maximum limit of 3 borrowed books."},
+                            status=status.HTTP_400_BAD_REQUEST)
+
         try:
             book = Book.objects.get(id=book_id)
             if book.availability <= 0:
-                return Response({"error": "No copies available for issuing"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"error": "No copies available for issuing."},
+                                status=status.HTTP_400_BAD_REQUEST)
 
-            # Proceed with issuing the book
             serializer = self.get_serializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             self.perform_create(serializer)
@@ -96,6 +109,7 @@ class BookIssueView(generics.CreateAPIView):
 
         except Book.DoesNotExist:
             return Response({"error": "Book not found"}, status=status.HTTP_404_NOT_FOUND)
+
 
 class CreateUserView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -130,9 +144,7 @@ class IssueReturnListView(generics.ListAPIView):
     serializer_class = IssueReturnSerializer
 
     def get_queryset(self):
-        """
-        Optionally filter by status (issued or returned).
-        """
+       
         queryset = super().get_queryset()
         status_filter = self.request.query_params.get('status', None)
         if status_filter:
@@ -143,9 +155,7 @@ class IssueReturnListView(generics.ListAPIView):
         return self.list(request, *args, **kwargs)
 
 class ReturnBookView(APIView):
-    """
-    Updates the status of an issued book to 'returned'.
-    """
+    
     def patch(self, request, pk):
         try:
             issue = IssueReturn.objects.get(id=pk)
@@ -212,9 +222,7 @@ class BookStatsView(APIView):
         })
 
 class PopularBooksView(APIView):
-    """
-     20 most issued books.
-    """
+  
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
@@ -230,7 +238,6 @@ class OverdueBooksView(APIView):
 
     def get(self, request):
         current_date = timezone.now().date()
-        # Count books where the current date is greater than the expected return date and the book hasn't been returned
         overdue_books_count = IssueReturn.objects.filter(
             Q(expected_return_date__lt=current_date) & Q(return_date__isnull=True)
         ).count()
@@ -238,9 +245,7 @@ class OverdueBooksView(APIView):
         return Response({"overdue_books": overdue_books_count})
     
 class TopGenresView(APIView):
-    """
-    View to return the top 5 most popular genres based on issued books.
-    """
+   
     permission_classes = [IsAuthenticated]
 
     def get(self, request):

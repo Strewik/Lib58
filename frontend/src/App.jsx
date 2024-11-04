@@ -7,6 +7,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import RegisterExaminer from './pages/RegisterExaminer';
 import Signup from './pages/RegisterAdmin';
 import Landing from './pages/Landing';
+import ClientDashboard from './pages/ClientDashboard';
 
 const Logout = () => {
   localStorage.clear();
@@ -33,6 +34,14 @@ function App() {
           element={
             <ProtectedRoute>
               <Home />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/client-dashboard"
+          element={
+            <ProtectedRoute>
+              <ClientDashboard />
             </ProtectedRoute>
           }
         />

@@ -20,7 +20,6 @@ function IssuedBooksList() {
       const response = await api.get("/api/issue/");
       setIssuedBooks(response.data);
 
-      // Calculate overdue books
       const overdue = response.data.filter(
         (book) =>
           book.status === "issued" &&

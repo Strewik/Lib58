@@ -56,7 +56,7 @@ const ClientDashboard = () => {
             {(overdueBooks || []).map((book) => (
               <li key={book.id}>
                 <strong>{book.title}</strong>
-                <p>Issued on: {book.date_issued}</p>
+                <p>Issued on: {book.issue_date}</p>
                 <p>Expected return date: {book.expected_return_date}</p>
                 <p>Fine owed: ${book.fine}</p>
               </li>

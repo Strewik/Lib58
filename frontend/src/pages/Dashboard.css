@@ -58,9 +58,9 @@
     background-color: #f9f9f9;
   }
   
-  .popular-books-table tr:hover {
+  /* .popular-books-table tr:hover {
     background-color: #ddd;
-  }
+  } */
   
   .popular-books-table td {
     text-align: left;

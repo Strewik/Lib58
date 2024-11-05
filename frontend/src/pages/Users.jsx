@@ -63,7 +63,7 @@ function Users() {
   return (
     <div className="user-management">
       <h2 className="header">Users</h2>
-      <Link to="/adduser" className="add-book-button">Add New User</Link>
+      {/* <Link to="/adduser" className="add-book-button">Add New User</Link> */}
 
       <table className="user-table">
         <thead>

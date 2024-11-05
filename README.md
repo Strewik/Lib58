@@ -5,6 +5,8 @@ A user can sign themselves up but the accounts are created as suspended[inactive
 When staff or admin logs in the are redirected to the admin dashboard[dashboard] where they have admin level privileges.
 When a client logs in they are redirected  to the client dashboard where they can only see their their account information.
 An admin can view statistics on the dashboard. can view and edit users; view, edit, add and delete, issue and return books. 
+A client can only borrow a book for 7 day, if a book is overdue the client pays a fine of $10. An over due book cannot be returned without confirming a fine has been paid.
+A client can only borrow a maximum of 3 books at a time. 
 
 **Setup** 
 git clone:
@@ -17,3 +19,4 @@ run: python manage.py runserver
 sample logins: email: john@mail.com  password: John
 
 deployed app: https://lib58-1.onrender.com/
+

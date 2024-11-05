@@ -154,7 +154,6 @@ const Dashboard = () => {
         </>
       ),
     },
-    { id: 6, title: "Card 6", content: "This is content for card 6" },
   ];
 
   return (

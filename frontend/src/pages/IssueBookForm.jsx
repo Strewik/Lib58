@@ -8,6 +8,7 @@ function IssueBookForm({ book, onClose, onSave }) {
   const [issueDate, setIssueDate] = useState(""); 
   const [expectedReturnDate, setExpectedReturnDate] = useState("");
   const [status, setStatus] = useState("issued"); 
+  const [errorMessages, setErrorMessages] = useState([]); // State to store multiple error messages
 
   useEffect(() => {
     api.get("/api/users/").then((res) => setUsers(res.data));
@@ -28,6 +29,8 @@ function IssueBookForm({ book, onClose, onSave }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrorMessages([]); 
+
     try {
       await api.post("/api/books/issue/", {
         user: userId,
@@ -41,7 +44,20 @@ function IssueBookForm({ book, onClose, onSave }) {
       alert("Book issued successfully!");
     } catch (error) {
       console.error("Error issuing book:", error);
-      alert("Failed to issue the book.");
+
+      if (error.response && error.response.data) {
+        const errorData = error.response.data;
+
+        if (Array.isArray(errorData.errors)) {
+          setErrorMessages(errorData.errors);
+        } else if (errorData.error) {
+          setErrorMessages([errorData.error]);
+        } else {
+          setErrorMessages(["Failed to issue the book."]);
+        }
+      } else {
+        setErrorMessages(["Failed to issue the book."]);
+      }
     }
   };
 
@@ -59,6 +75,15 @@ function IssueBookForm({ book, onClose, onSave }) {
       <h3>
         Issue Book: <strong>{book.title}</strong> by <em>{book.author}</em>
       </h3>
+
+      {errorMessages.length > 0 && (
+        <div className="error-messages">
+          {errorMessages.map((message, index) => (
+            <p key={index} style={{ color: "red" }}>{message}</p>
+          ))}
+        </div>
+      )}
+
       <div>
         <label>Search or Select User:</label>
         <input
@@ -112,20 +137,18 @@ export default IssueBookForm;
 // import api from "../api";
 
 // function IssueBookForm({ book, onClose, onSave }) {
-//   const [userId, setUserId] = useState(""); // Store the selected user's ID
-//   const [userName, setUserName] = useState(""); // Store the selected user's name for input display
-//   const [users, setUsers] = useState([]); // List of users for dropdown
-//   const [issueDate, setIssueDate] = useState(""); // Default issue date is set below
+//   const [userId, setUserId] = useState(""); 
+//   const [userName, setUserName] = useState(""); 
+//   const [users, setUsers] = useState([]); 
+//   const [issueDate, setIssueDate] = useState(""); 
 //   const [expectedReturnDate, setExpectedReturnDate] = useState("");
-//   const [status, setStatus] = useState("issued"); // Set default status to "issued"
+//   const [status, setStatus] = useState("issued"); 
 
-//   // Fetch users from the API
 //   useEffect(() => {
 //     api.get("/api/users/").then((res) => setUsers(res.data));
 
-//     // Set default issue date as today's date
 //     const today = new Date();
-//     const formattedDate = today.toISOString().split('T')[0]; // Format date as YYYY-MM-DD
+//     const formattedDate = today.toISOString().split('T')[0]; 
 //     setIssueDate(formattedDate);
 //   }, []);
 
@@ -141,7 +164,7 @@ export default IssueBookForm;
 //   const handleSubmit = async (e) => {
 //     e.preventDefault();
 //     try {
-//       await api.post("/api/issue/", {
+//       await api.post("/api/books/issue/", {
 //         user: userId,
 //         book: book.id,
 //         issue_date: issueDate,
@@ -157,15 +180,13 @@ export default IssueBookForm;
 //     }
 //   };
 
-//   // Filter users based on the typed input
 //   const filteredUsers = users.filter((user) =>
 //     user.full_name.toLowerCase().includes(userName.toLowerCase())
 //   );
 
-//   // When a user is selected from the dropdown
 //   const handleUserSelect = (selectedUserId, selectedUserName) => {
 //     setUserId(selectedUserId);
-//     setUserName(selectedUserName); // Fill input with selected user's name
+//     setUserName(selectedUserName); 
 //   };
 
 //   return (
@@ -218,4 +239,6 @@ export default IssueBookForm;
 // }
 
 // export default IssueBookForm;
+
+
 

@@ -83,32 +83,78 @@ class BookIssueView(generics.CreateAPIView):
     serializer_class = BookIssueSerializer
 
     def create(self, request, *args, **kwargs):
-        user = request.user
+        user_id = request.data.get("user")
         book_id = request.data.get("book")
 
+        # Ensure both user and book IDs are provided
+        if not user_id or not book_id:
+            return Response({"error": "User ID and Book ID are required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user = User.objects.get(id=user_id)
+            book = Book.objects.get(id=book_id)
+        except User.DoesNotExist:
+            return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+        except Book.DoesNotExist:
+            return Response({"error": "Book not found."}, status=status.HTTP_404_NOT_FOUND)
+
         if user.status == "suspended":
-            return Response({"error": "Your account is suspended and you cannot borrow books."},
+            return Response({"error": "This user's account is suspended, they cannot borrow books."},
                             status=status.HTTP_403_FORBIDDEN)
 
         active_issues = IssueReturn.objects.filter(user=user, status="issued").count()
         if active_issues >= 3:
-            return Response({"error": "You have reached the maximum limit of 3 borrowed books."},
+            return Response({"error": "This user has reached the maximum limit of 3 borrowed books."},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        try:
-            book = Book.objects.get(id=book_id)
-            if book.availability <= 0:
-                return Response({"error": "No copies available for issuing."},
-                                status=status.HTTP_400_BAD_REQUEST)
+        if book.availability <= 0:
+            return Response({"error": "No copies available for issuing."},
+                            status=status.HTTP_400_BAD_REQUEST)
 
-            serializer = self.get_serializer(data=request.data)
-            serializer.is_valid(raise_exception=True)
-            self.perform_create(serializer)
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
 
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        # Book.objects.filter(id=book.id).update(availability=book.availability - 1)
 
-        except Book.DoesNotExist:
-            return Response({"error": "Book not found"}, status=status.HTTP_404_NOT_FOUND)
+        book.save()
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+
+
+# class BookIssueView(generics.CreateAPIView):
+#     queryset = IssueReturn.objects.all()
+#     serializer_class = BookIssueSerializer
+
+#     def create(self, request, *args, **kwargs):
+#         user = request.data.get('user')
+#         book_id = request.data.get("book")
+
+#         if user.status == "suspended":
+#             return Response({"error": "Account is suspended and you cannot borrow books."},
+#                             status=status.HTTP_403_FORBIDDEN)
+
+#         active_issues = IssueReturn.objects.filter(user=user, status="issued").count()
+#         if active_issues >= 3:
+#             return Response({"error": "You have reached the maximum limit of 3 borrowed books."},
+#                             status=status.HTTP_400_BAD_REQUEST)
+
+#         try:
+#             book = Book.objects.get(id=book_id)
+#             if book.availability <= 0:
+#                 return Response({"error": "No copies available for issuing."},
+#                                 status=status.HTTP_400_BAD_REQUEST)
+
+#             serializer = self.get_serializer(data=request.data)
+#             serializer.is_valid(raise_exception=True)
+#             self.perform_create(serializer)
+
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+#         except Book.DoesNotExist:
+#             return Response({"error": "Book not found"}, status=status.HTTP_404_NOT_FOUND)
 
 
 class CreateUserView(generics.CreateAPIView):

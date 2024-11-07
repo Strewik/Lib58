@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
+import { useNavigate, Link } from "react-router-dom"; 
 import api from "../api";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants";
 
@@ -36,7 +35,7 @@ const AuthForm = ({ isLogin, route }) => {
         localStorage.setItem(REFRESH_TOKEN, res.data.refresh);
         navigate("/");
       } else {
-        navigate("/login"); 
+        navigate("/login");
       }
     } catch (error) {
       console.error("Error during authentication:", error.response?.data);
@@ -113,8 +112,23 @@ const AuthForm = ({ isLogin, route }) => {
         </div>
         <button type="submit">{isLogin ? "Login" : "Sign Up"}</button>
       </form>
+      {/* Navigation link to the other form */}
+      <div className="form-footer">
+        {isLogin ? (
+          <p>
+            Don’t have an account? <Link to="/signup">Sign Up</Link>
+          </p>
+        ) : (
+          <p>
+            Already have an account? <Link to="/login">Login</Link>
+          </p>
+        )}
+      </div>
     </div>
   );
 };
 
 export default AuthForm;
+
+
+

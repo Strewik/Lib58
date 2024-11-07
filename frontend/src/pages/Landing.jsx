@@ -1,17 +1,25 @@
 import { useState } from "react";
-import { Outlet } from "react-router-dom";
-import "./Landing.css"; 
+import { Outlet, useNavigate } from "react-router-dom";
+import "./Landing.css";
 import Dashboard from "./Dashboard";
 import Users from "./Users";
 import BookList from "./BookList";
 import IssueReturn from "./IssueReturn";
 import ClientDashboard from "./ClientDashboard";
+import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants";
 
 const HomePage = () => {
+  const navigate = useNavigate();
   const [selectedMenuItem, setSelectedMenuItem] = useState("Dashboard");
 
   const handleMenuItemClick = (menuItem) => {
     setSelectedMenuItem(menuItem);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem(ACCESS_TOKEN);
+    localStorage.removeItem(REFRESH_TOKEN);
+    navigate("/login"); 
   };
 
   return (
@@ -59,7 +67,11 @@ const HomePage = () => {
             </li>
           </ul>
         </nav>
-
+        <div className="logout-section">
+          <button onClick={handleLogout} className="logout-button">
+            Logout
+          </button>
+        </div>
         <footer className="copyright">
           <p>&copy; 2024 Lib58</p>
         </footer>

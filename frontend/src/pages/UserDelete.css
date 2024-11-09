@@ -1,19 +1,42 @@
 .overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .delete-confirmation {
-    background: white;
-    padding: 20px;
-    border-radius: 5px;
-    text-align: center;
-  }
-  
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.delete-confirmation {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.delete-confirmation h2 {
+  color: #d9534f;
+}
+
+.delete-confirmation button {
+  margin: 5px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.delete-confirmation button:first-child {
+  background-color: #d9534f;
+  color: #fff;
+}
+
+.delete-confirmation button:last-child {
+  background-color: #6c757d;
+  color: #fff;
+}
+

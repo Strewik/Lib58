@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import api from "../api";
 import moment from "moment";
+import "./IssueReturn.css"
 
 function IssuedBooksList() {
   const [issuedBooks, setIssuedBooks] = useState([]);
   const [activeTab, setActiveTab] = useState("notReturned");
   const [isOverdue, setIsOverdue] = useState(false);
   const [finePaid, setFinePaid] = useState(false);
-  const [returningBookId, setReturningBookId] = useState(null);
+  // const [returningBookId, setReturningBookId] = useState(null);
   const [overdueBooks, setOverdueBooks] = useState([]);
   const [totalOverdueBooks, setTotalOverdueBooks] = useState(0);
 
@@ -33,23 +34,21 @@ function IssuedBooksList() {
   };
 
   const handleReturnBook = async (bookId) => {
-    try {
-      const response = await api.patch(`/api/issues/${bookId}/return/`, {
-        fine_paid: finePaid,
-      });
+    const book = issuedBooks.find((b) => b.id === bookId);
 
-      if (
-        response.data.detail ===
-        "Book is overdue - Fine $10. Confirm fine payment to return."
-      ) {
-        setIsOverdue(true);
-        setReturningBookId(bookId);
-      } else {
+    if (book.overdue_status === "due") {
+      try {
+        // const response = await api.patch(`/api/issues/${bookId}/return/`, {
+        //   fine_paid: false,
+        // });
         fetchIssuedBooks();
         alert("Book returned successfully!");
+      } catch (error) {
+        console.error("Error returning the book:", error);
       }
-    } catch (error) {
-      console.error("Error returning the book:", error);
+    } else if (book.overdue_status === "overdue") {
+      setIsOverdue(true);
+      setReturningBookId(bookId);
     }
   };
 
@@ -59,7 +58,16 @@ function IssuedBooksList() {
       return;
     }
 
-    await handleReturnBook(returningBookId);
+    try {
+      // const response = await api.patch(`/api/issues/${returningBookId}/return/`, {
+      //   fine_paid: true,
+      // });
+      fetchIssuedBooks();
+      alert("Book returned successfully with fine payment confirmed!");
+    } catch (error) {
+      console.error("Error returning the book with fine payment:", error);
+    }
+
     setIsOverdue(false);
     setFinePaid(false);
     setReturningBookId(null);
@@ -113,7 +121,12 @@ function IssuedBooksList() {
                 <th>User</th>
                 <th>Issue Date</th>
                 <th>Expected Return Date</th>
-                {activeTab === "notReturned" && <th>Action</th>}
+                {activeTab === "notReturned" && (
+                  <>
+                    <th>Due Status</th>
+                    <th>Action</th>
+                  </>
+                )}
               </tr>
             </thead>
             <tbody>
@@ -124,11 +137,14 @@ function IssuedBooksList() {
                   <td>{issue.issue_date}</td>
                   <td>{issue.expected_return_date}</td>
                   {activeTab === "notReturned" && (
-                    <td>
-                      <button onClick={() => handleReturnBook(issue.id)}>
-                        Return Book
-                      </button>
-                    </td>
+                    <>
+                      <td>{issue.overdue_status}</td>
+                      <td>
+                        <button onClick={() => handleReturnBook(issue.id)}>
+                          Return Book
+                        </button>
+                      </td>
+                    </>
                   )}
                 </tr>
               ))}
@@ -141,6 +157,7 @@ function IssuedBooksList() {
         <div className="overlay">
           <div className="popup">
             <h3>Book Overdue - Fine $10</h3>
+            <p>The book is overdue - Fine $10. Confirm fine has been paid.</p>
             <label>
               <input
                 type="checkbox"
@@ -149,8 +166,8 @@ function IssuedBooksList() {
               />
               Fine paid?
             </label>
-            <button onClick={confirmReturnWithFine}>Confirm Return</button>
-            <button onClick={() => setIsOverdue(false)}>Cancel</button>
+            <button onClick={confirmReturnWithFine}>Yes</button>
+            <button onClick={() => setIsOverdue(false)}>No</button>
           </div>
         </div>
       )}
@@ -165,6 +182,7 @@ export default IssuedBooksList;
 
 // import { useState, useEffect } from "react";
 // import api from "../api";
+// import moment from "moment";
 
 // function IssuedBooksList() {
 //   const [issuedBooks, setIssuedBooks] = useState([]);
@@ -172,6 +190,8 @@ export default IssuedBooksList;
 //   const [isOverdue, setIsOverdue] = useState(false);
 //   const [finePaid, setFinePaid] = useState(false);
 //   const [returningBookId, setReturningBookId] = useState(null);
+//   const [overdueBooks, setOverdueBooks] = useState([]);
+//   const [totalOverdueBooks, setTotalOverdueBooks] = useState(0);
 
 //   useEffect(() => {
 //     fetchIssuedBooks();
@@ -181,6 +201,14 @@ export default IssuedBooksList;
 //     try {
 //       const response = await api.get("/api/issue/");
 //       setIssuedBooks(response.data);
+
+//       const overdue = response.data.filter(
+//         (book) =>
+//           book.status === "issued" &&
+//           moment().isAfter(moment(book.expected_return_date))
+//       );
+//       setOverdueBooks(overdue);
+//       setTotalOverdueBooks(overdue.length);
 //     } catch (error) {
 //       console.error("Error fetching issued books:", error);
 //     }
@@ -188,23 +216,24 @@ export default IssuedBooksList;
 
 //   const handleReturnBook = async (bookId) => {
 //     try {
-//         const response = await api.patch(`/api/issues/${bookId}/return/`, {
-//             fine_paid: finePaid,  // Make sure this is passed correctly
-//         });
+//       const response = await api.patch(`/api/issues/${bookId}/return/`, {
+//         fine_paid: finePaid,
+//       });
 
-//         if (response.data.detail === "Book is overdue - Fine $10. Confirm fine payment to return.") {
-//             setIsOverdue(true);
-//             setReturningBookId(bookId);
-//         } else {
-//             fetchIssuedBooks();
-//             alert("Book returned successfully!");
-//         }
+//       if (
+//         response.data.detail ===
+//         "Book is overdue - Fine $10. Confirm fine payment to return."
+//       ) {
+//         setIsOverdue(true);
+//         setReturningBookId(bookId);
+//       } else {
+//         fetchIssuedBooks();
+//         alert("Book returned successfully!");
+//       }
 //     } catch (error) {
-//         console.error("Error returning the book:", error);
-//         // You may want to provide user feedback based on error response
+//       console.error("Error returning the book:", error);
 //     }
-// };
-
+//   };
 
 //   const confirmReturnWithFine = async () => {
 //     if (!finePaid) {
@@ -221,7 +250,9 @@ export default IssuedBooksList;
 //   const filteredBooks =
 //     activeTab === "notReturned"
 //       ? issuedBooks.filter((book) => book.status === "issued")
-//       : issuedBooks.filter((book) => book.status === "returned");
+//       : activeTab === "returned"
+//       ? issuedBooks.filter((book) => book.status === "returned")
+//       : overdueBooks;
 
 //   return (
 //     <div>
@@ -239,7 +270,19 @@ export default IssuedBooksList;
 //         >
 //           Returned
 //         </button>
+//         <button
+//           className={activeTab === "overdue" ? "active" : ""}
+//           onClick={() => setActiveTab("overdue")}
+//         >
+//           Overdue
+//         </button>
 //       </div>
+
+//       {activeTab === "overdue" && (
+//         <div>
+//           <h3>Total Overdue Books: {totalOverdueBooks}</h3>
+//         </div>
+//       )}
 
 //       <div>
 //         {filteredBooks.length === 0 ? (
@@ -252,7 +295,13 @@ export default IssuedBooksList;
 //                 <th>User</th>
 //                 <th>Issue Date</th>
 //                 <th>Expected Return Date</th>
-//                 {activeTab === "notReturned" && <th>Action</th>}
+
+//                 {activeTab === "notReturned" && (
+//                   <>
+//                     <th>Due status</th>
+//                     <th>Action</th>
+//                   </>
+//                 )}
 //               </tr>
 //             </thead>
 //             <tbody>
@@ -262,12 +311,16 @@ export default IssuedBooksList;
 //                   <td>{issue.user.full_name}</td>
 //                   <td>{issue.issue_date}</td>
 //                   <td>{issue.expected_return_date}</td>
+
 //                   {activeTab === "notReturned" && (
-//                     <td>
-//                       <button onClick={() => handleReturnBook(issue.id)}>
-//                         Return Book
-//                       </button>
-//                     </td>
+//                     <>
+//                       <td>{issue.overdue_status}</td>
+//                       <td>
+//                         <button onClick={() => handleReturnBook(issue.id)}>
+//                           Return Book
+//                         </button>
+//                       </td>
+//                     </>
 //                   )}
 //                 </tr>
 //               ))}
@@ -275,6 +328,7 @@ export default IssuedBooksList;
 //           </table>
 //         )}
 //       </div>
+
 //       {isOverdue && (
 //         <div className="overlay">
 //           <div className="popup">
@@ -297,5 +351,3 @@ export default IssuedBooksList;
 // }
 
 // export default IssuedBooksList;
-
-

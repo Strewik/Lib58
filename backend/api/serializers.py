@@ -105,6 +105,7 @@ class IssueReturnSerializer(serializers.ModelSerializer):
             "expected_return_date",
             "return_date",
             "status",
+            "overdue_status",
         ]
         read_only_fields = ["issue_date", "book", "user"]
 

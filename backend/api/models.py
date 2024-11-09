@@ -7,6 +7,8 @@ from django.contrib.auth.models import (
 import uuid
 from django.conf import settings
 from datetime import datetime, date
+from django.utils import timezone
+
 
 
 # Create your models here.
@@ -163,4 +165,10 @@ class IssueReturn(models.Model):
 
         super().save(*args, **kwargs)
 
+    @property
+    def overdue_status(self):
+        """Returns 'overdue' if current date is past expected_return_date, else 'due'."""
+        if self.status == "issued" and timezone.now().date() > self.expected_return_date:
+            return "overdue"
+        return "due"
         

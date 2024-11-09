@@ -123,40 +123,6 @@ class BookIssueView(generics.CreateAPIView):
 
 
 
-
-# class BookIssueView(generics.CreateAPIView):
-#     queryset = IssueReturn.objects.all()
-#     serializer_class = BookIssueSerializer
-
-#     def create(self, request, *args, **kwargs):
-#         user = request.data.get('user')
-#         book_id = request.data.get("book")
-
-#         if user.status == "suspended":
-#             return Response({"error": "Account is suspended and you cannot borrow books."},
-#                             status=status.HTTP_403_FORBIDDEN)
-
-#         active_issues = IssueReturn.objects.filter(user=user, status="issued").count()
-#         if active_issues >= 3:
-#             return Response({"error": "You have reached the maximum limit of 3 borrowed books."},
-#                             status=status.HTTP_400_BAD_REQUEST)
-
-#         try:
-#             book = Book.objects.get(id=book_id)
-#             if book.availability <= 0:
-#                 return Response({"error": "No copies available for issuing."},
-#                                 status=status.HTTP_400_BAD_REQUEST)
-
-#             serializer = self.get_serializer(data=request.data)
-#             serializer.is_valid(raise_exception=True)
-#             self.perform_create(serializer)
-
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-#         except Book.DoesNotExist:
-#             return Response({"error": "Book not found"}, status=status.HTTP_404_NOT_FOUND)
-
-
 class CreateUserView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -201,7 +167,6 @@ class IssueReturnListView(generics.ListAPIView):
         return self.list(request, *args, **kwargs)
 
 class ReturnBookView(APIView):
-    
     def patch(self, request, pk):
         try:
             issue = IssueReturn.objects.get(id=pk)
@@ -209,14 +174,18 @@ class ReturnBookView(APIView):
                 return Response({'detail': 'Book already returned.'}, status=status.HTTP_400_BAD_REQUEST)
             
             overdue = issue.expected_return_date < timezone.now().date()
-            if overdue and not request.data.get('fine_paid'):
-                return Response({'detail': 'Book is overdue - Fine $10. Confirm fine payment to return.'}, status=status.HTTP_400_BAD_REQUEST)
+            fine_paid = request.data.get('fine_paid', False)
+            
+            # if overdue and not fine_paid:
+            #     return Response({'detail': 'Book is overdue - Fine $10. Confirm fine payment to return.'}, status=status.HTTP_400_BAD_REQUEST)
             
             issue.status = 'returned'
-            issue.return_date = timezone.now()  
+            issue.return_date = timezone.now()
             issue.save()
+            
             serializer = IssueReturnSerializer(issue)
             return Response(serializer.data, status=status.HTTP_200_OK)
+        
         except IssueReturn.DoesNotExist:
             return Response({'detail': 'Issue not found.'}, status=status.HTTP_404_NOT_FOUND)
 

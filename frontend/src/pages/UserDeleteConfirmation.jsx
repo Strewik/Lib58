@@ -1,5 +1,4 @@
-import React from "react";
-import "./UserDelete.css"
+import "./UserDelete.css";
 
 const UserDeleteConfirmation = ({ user, onConfirm, onCancel }) => {
   return (
@@ -15,3 +14,5 @@ const UserDeleteConfirmation = ({ user, onConfirm, onCancel }) => {
 };
 
 export default UserDeleteConfirmation;
+
+

@@ -131,4 +131,3 @@ const AuthForm = ({ isLogin, route }) => {
 export default AuthForm;
 
 
-

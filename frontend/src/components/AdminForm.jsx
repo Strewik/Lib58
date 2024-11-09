@@ -57,3 +57,4 @@ const AdminForm = ({ route, method }) => {
 }
 
 export default AdminForm;
+
